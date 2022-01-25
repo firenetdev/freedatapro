@@ -978,6 +978,7 @@ install_sudo
 install_squid
 install_openvpn
 install_stunnel
+install_socks
 install_rclocal
 install_iptables
 install_done
