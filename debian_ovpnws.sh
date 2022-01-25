@@ -698,7 +698,6 @@ install_rclocal(){
 install_done()
 {
   clear
-  systemctl unmask rc-local.service
   echo "OPENVPN SERVER FIRENET"
   echo "IP : $(curl -s https://api.ipify.org)"
   echo "OPENVPN TCP port : 1194"
