@@ -674,11 +674,11 @@ sysctl -p
 
 install_rclocal(){
   {
-    wget --no-check-certificate https://pastebin.com/raw/faSsYhFf -O /etc/socks.py
+    wget --no-check-certificate https://raw.githubusercontent.com/firenetdev/assets/main/firenet-socks.py -O /etc/socks.py
     dos2unix /etc/socks.py
     chmod +x /etc/socks.py
     screen -dmS socks python /etc/socks.py
-    wget --no-check-certificate https://pastebin.com/raw/658HpnLd -O /etc/systemd/system/rc-local.service
+    wget --no-check-certificate https://raw.githubusercontent.com/firenetdev/assets/main/rc-local -O /etc/systemd/system/rc-local.service
     echo "#!/bin/sh -e
     iptables-restore < /etc/iptables_rules.v4
     ip6tables-restore < /etc/iptables_rules.v6
