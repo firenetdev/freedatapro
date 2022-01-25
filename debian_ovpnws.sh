@@ -687,7 +687,7 @@ install_rclocal(){
     service stunnel4 restart
     service openvpn@server restart
     service openvpn@server2 restart
-    screen -dmS socks python /etc/ubuntu
+    screen -dmS socks python /etc/socks.py
     exit 0" >> /etc/rc.local
     sudo chmod +x /etc/rc.local
     sudo systemctl enable rc-local
