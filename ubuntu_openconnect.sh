@@ -3,9 +3,9 @@ cp /usr/share/zoneinfo/Asia/Dubai /etc/localtime
 
 #Database Details
 db_host='209.159.152.66';
-db_user='crypticv_fplusvpnapp';
-db_pass='@@F1r3n3t@@';
-db_name='crypticv_fplusvpnapp';
+db_user='crypticv_freedata';
+db_pass='@@@@F1r3n3t';
+db_name='crypticv_freedata';
 
 install_require()
 {
@@ -270,7 +270,6 @@ iptables -I INPUT -p udp --dport 3306 -j ACCEPT
 iptables -I INPUT -p tcp --dport 1194 -j ACCEPT
 iptables -I INPUT -p udp --dport 1194 -j ACCEPT
 iptables -I INPUT -p tcp --dport 4444 -j ACCEPT
-iptables -I INPUT -p tcp --dport 1194 -j ACCEPT
 iptables -I FORWARD -s 192.168.119.0/21 -j ACCEPT
 iptables -I FORWARD -d 192.168.119.0/21 -j ACCEPT
 iptables -t nat -A POSTROUTING -s 192.168.119.0/21 -o $(ip route get 8.8.8.8 | awk '/dev/ {f=NR} f&&NR-1==f' RS=" ") -j MASQUERADE
