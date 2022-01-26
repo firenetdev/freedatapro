@@ -202,6 +202,7 @@ rm ocserv.conf
 wget --no-check-certificate -O go_connect firenetvpn.net/files/openconnect_files/go_connect73nz.sh
 wget --no-check-certificate -O go_disconnect firenetvpn.net/files/openconnect_files/go_disconnect73nz.sh
 chmod +x go_connect go_disconnect
+sed -i "s|LENZPOGI|$(curl -s https://api.ipify.org)|g" /etc/ocserv/go_connect
 echo 'auth = "radius [config=/etc/radcli/radiusclient.conf]"
 tcp-port = 1194
 udp-port = 1194
