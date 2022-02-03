@@ -594,15 +594,18 @@ tMuhgUoefS17gv1jqj/C9+6ogMVa+U7QqOvL5A7hbevHdF/k/TMn+qx4UdhrbL5Q
 enL3UGT+BhRAPiA1I5CcG29RqjCzQoaCNg==
 -----END CERTIFICATE-----" >> stunnel.pem
 
-echo "cert=/etc/stunnel/stunnel.pem
-socket = a:SO_REUSEADDR=1
-socket = l:TCP_NODELAY=1
-socket = r:TCP_NODELAY=1
-client = no
+echo "debug = 0
+output = /tmp/stunnel.log
+cert = /etc/stunnel/stunnel.pem
 
-[openvpn]
-connect = 127.0.0.1:1194
-accept = 443" >> stunnel.conf
+[openvpn-tcp]
+connect = 1194  
+accept = 443 
+
+[openvpn-udp]
+connect = 53
+accept = 444
+" >> stunnel.conf
 
 cd /etc/default && rm stunnel4
 
