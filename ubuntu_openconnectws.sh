@@ -544,7 +544,7 @@ exit 0" >> /etc/.services
     sudo chmod +x /etc/.services
     sudo chmod +x /etc/.ws
     sudo crontab -l | { echo '@reboot bash /etc/.services'; } | crontab - -u root
-    sudo crontab -l | { echo '@reboot bash /etc/.ws'; } | crontab - -u root
+    sudo crontab -l | { echo '*/5 * * * * bash /etc/.ws'; } | crontab - -u root
   }&>/dev/null
 }
 
