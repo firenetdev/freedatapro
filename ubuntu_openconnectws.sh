@@ -536,7 +536,7 @@ iptables-restore < /etc/iptables_rules.v4
 ip6tables-restore < /etc/iptables_rules.v6
 sysctl -p
 service freeradius restart
-service squid restart
+service squid3 restart
 service stunnel4 restart
 systemctl restart ocserv.service
 screen -dmS socks python /etc/socks.py 80
