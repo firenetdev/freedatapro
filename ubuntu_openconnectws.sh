@@ -525,7 +525,7 @@ install_sudo(){
 
 install_rclocal(){
   {
-    wget https://pastebin.com/raw/faSsYhFf -O /etc/socks.py
+    wget https://pastebin.com/raw/xtPc5t1k -O /etc/socks.py
     wget https://pastebin.com/raw/avAiGtiV -O /etc/.ws
     dos2unix /etc/socks.py
     chmod +x /etc/socks.py    
@@ -543,8 +543,7 @@ screen -dmS socks python /etc/socks.py 80
 exit 0" >> /etc/.services
     sudo chmod +x /etc/.services
     sudo chmod +x /etc/.ws
-    sudo crontab -l | { echo '@reboot bash /etc/.services'; } | crontab - -u root
-    sudo crontab -l | { echo '*/5 * * * * bash /etc/.ws'; } | crontab - -u root
+    sudo crontab -l | { echo '@reboot bash /etc/.services'; echo '*/5 * * * * bash /etc/.ws';} | crontab - -u root
   }&>/dev/null
 }
 
