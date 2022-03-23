@@ -1,6 +1,28 @@
 #!/bin/bash
 cp /usr/share/zoneinfo/Asia/Manila /etc/localtime
 
+MYIP=$(wget -qO- icanhazip.com);
+genA=$(echo "$(pwgen 10 1)" | tr '[:upper:]' '[:lower:]')
+genNS=$(echo "$(pwgen 5 1)" | tr '[:upper:]' '[:lower:]')
+secretkey='server'
+dnsresolverName="1.1.1.1"
+dnsresolverType="udp"
+dnsresolver="1.1.1.1:53"
+
+dnsdomain=firenetvpn.com
+dnszone=9f9fc8fdf85dcabaf09e2fc144a25a2e
+dnsapi=700415c31f88b654b85b745784587c46e06bc
+dnsemail=firenetdev@gmail.com
+
+arecord="$genA.$dnsdomain"
+nsrecord="$genNS.$dnsdomain"
+hostname=$arecord
+domain=$nsrecord
+
+activeAPI='http://ouestvpn.store/api/authentication/active.php?key=FIRENET541'
+inactiveAPI='http://ouestvpn.store/api/authentication/inactive.php?key=FIRENET541'
+deletedAPI='http://ouestvpn.store/api/authentication/deleted.php?key=FIRENET541'
+
 init_install (){
 clear
 apt update
@@ -18,126 +40,8 @@ sudo shutdown -r +10
 init_start (){
 clear
 curl -4skL "http://firenetvpn.net/files/banner" -o /etc/banner
-genA=$(echo "$(pwgen 10 1)" | tr '[:upper:]' '[:lower:]')
-genNS=$(echo "$(pwgen 5 1)" | tr '[:upper:]' '[:lower:]')
-#SSHusername=$(echo "$(pwgen -cns 10 1)" | tr '[:upper:]' '[:lower:]')
-#SSHpassword=$(echo "$(pwgen -cns 14 1)")
-secretkey='server'
-clear
-echo "Select a domain from the list (just enter the number)
-1 = firenet.ph ( `curl -s -X GET 'https://api.cloudflare.com/client/v4/zones/09b93e9eb90d2ae30b3eb1452b8a6588/dns_records?type=A&proxied=false&page=1&per_page=100&order=type&direction=desc&match=any' -H 'X-Auth-Email: harulenz@gmail.com' -H 'X-Auth-Key: 20f989db3c168115b85e51e03b07b9c7eb85b' -H 'Content-Type: application/json' | jq -r '.result_info.total_count'` / 400 ) records
 
-Note : if you select a server with already has 200 records in it, I cant guarantee the tunnel will work so pick a server with lowest records!
-Adding more domain soon :) 
-"
-read -p "Please enter the number of selected domain: " dnsdomaininput
-  if [[ $dnsdomaininput ]] && [ $dnsdomaininput -eq $dnsdomaininput 2>/dev/null ]
-  then
-    dnsdomainNum=$dnsdomaininput
-  else
-    clear
-     echo "$dnsdomaininput is not an integer or not defined"
-    exit 1
-  fi
-echo "-------------------------------------------------"
-echo "Select a dns resolver
-1 = Google Doh
-2 = Google (8.8.8.8)
-3 = Cloudflare Doh
-4 = Cloudflare (1.1.1.1)
-5 = Opendns Doh
-6 = Opendns (208.67.222.222)
-"
-read -p "Please enter the type of dns resolver : " dnschecker
-  if [[ $dnschecker ]] && [ $dnschecker -eq $dnschecker 2>/dev/null ]
-  then
-    dnsresolverselected=$dnschecker
-  else
-    clear
-     echo "$dnschecker is not an integer or not defined"
-    exit 1
-  fi
-
-clear
-
-case $dnsresolverselected in
-
-  1)
-    dnsresolverName="Google Doh"
-     dnsresolverType="doh"
-    dnsresolver="https://dns.google/dns-query"
-    ;;
-
-  2)
-    dnsresolverName="Google (8.8.8.8)"
-     dnsresolverType="udp"
-    dnsresolver="8.8.8.8:53"
-    ;;
-  3)
-    dnsresolverName="Cloudflare Doh"
-     dnsresolverType="doh"
-    dnsresolver="https://cloudflare-dns.com/dns-query"
-    ;;
-  4)
-    dnsresolverName="Cloudflare (1.1.1.1)"
-     dnsresolverType="udp"
-    dnsresolver="1.1.1.1:53"
-    ;;
-  5)
-    dnsresolverName="Opendns Doh"
-     dnsresolverType="doh"
-    dnsresolver="https://doh.opendns.com/dns-query"
-    ;;
-  6)
-    dnsresolverName="Opendns (208.67.222.222)"
-     dnsresolverType="udp"
-    dnsresolver="208.67.222.222:53"
-    ;;     
-  *)
-    exit 1
-    ;;
-esac
-
-case $dnsdomainNum in
-
-  1)
-    if [[ `curl -s -X GET 'https://api.cloudflare.com/client/v4/zones/09b93e9eb90d2ae30b3eb1452b8a6588/dns_records?type=A&proxied=false&page=1&per_page=100&order=type&direction=desc&match=any' -H 'X-Auth-Email: harulenz@gmail.com' -H 'X-Auth-Key: 20f989db3c168115b85e51e03b07b9c7eb85b' -H 'Content-Type: application/json' | jq -r '.result_info.total_count'` == "400" ]]
-    then
-        echo "Dns records on this domain is full!"
-        exit 1
-    else
-        dnsdomain=firenet.ph
-        dnszone=09b93e9eb90d2ae30b3eb1452b8a6588
-    fi
-    ;;      
-  *)
-    exit 1
-    ;;
-esac
-# Config Show
-arecord="$genA.$dnsdomain"
-nsrecord="$genNS.$dnsdomain"
-hostname=$arecord
-domain=$nsrecord
-clear
-echo "Firenet Solo SSH via DNS Installer v.1
-
-DNS : $domain
-
-Config Link : $serverIp:5623/$secretkey.txt 
-(Visit the url above after installation)
-
-
-Ctrl + c to cancel installation"
-time=15
-while [[ $time -ge 0 ]]; do
-echo -ne "\r\033[KInstalling in t minus $time"
-sleep 1
-let "time-=1"
-done
-curl -X POST "https://api.cloudflare.com/client/v4/zones/$dnszone/dns_records" -H "X-Auth-Email: harulenz@gmail.com" -H "X-Auth-Key: 20f989db3c168115b85e51e03b07b9c7eb85b" -H "Content-Type: application/json" --data '{"type":"A","name":"'"$(echo $arecord)"'","content":"'"$(curl -s https://api.ipify.org)"'","ttl":1,"priority":0,"proxied":false}' &>/dev/null
-curl -X POST "https://api.cloudflare.com/client/v4/zones/$dnszone/dns_records" -H "X-Auth-Email: harulenz@gmail.com" -H "X-Auth-Key: 20f989db3c168115b85e51e03b07b9c7eb85b" -H "Content-Type: application/json" --data '{"type":"NS","name":"'"$(echo $nsrecord)"'","content":"'"$(echo $arecord)"'","ttl":1,"priority":0,"proxied":false}' &>/dev/null
-clear
+curl -X POST "https://api.cloudflare.com/client/v4/zones/$dnszone/dns_records" -H "X-Auth-Email: $dnsemail" -H "X-Auth-Key: $dnsapi" -H "Content-Type: application/json" --data '{"type":"NS","name":"'"$(echo $nsrecord)"'","content":"'"$(echo $arecord)"'","ttl":1,"priority":0,"proxied":false}' &>/dev/null
 }
 
 install_firewall (){
@@ -329,6 +233,31 @@ fi
 } &>/dev/null
 }
 
+ConfigAuthentication(){
+echo -e "[\e[32mInfo\e[0m] Configuring Authentication"
+
+curl -4skL "$activeAPI" -o /etc/active.sh
+curl -4skL "$inactiveAPI" -o /etc/inactive.sh
+curl -4skL "$deletedAPI" -o /etc/deleted.sh
+
+cat <<'authEOF'> /etc/fetch_user.bash
+#!/bin/bash
+curl -4skL "$activeAPI" -o /etc/active.sh
+curl -4skL "$inactiveAPI" -o /etc/inactive.sh
+curl -4skL "$deletedAPI" -o /etc/deleted.sh
+authEOF
+
+chmod +x /etc/fetch_user.bash
+chmod +x /etc/active.sh
+chmod +x /etc/inactive.sh
+chmod +x /etc/deleted.sh
+
+echo -e "*/5 *\t* * *\troot\tbash /etc/fetch_user.bash" >> /etc/cron.d/authentication
+echo -e "*/5 *\t* * *\troot\tbash /etc/active.sh" >> /etc/cron.d/authentication
+echo -e "*/5 *\t* * *\troot\tbash /etc/inactive.sh" >> /etc/cron.d/authentication
+echo -e "*/5 *\t* * *\troot\tbash /etc/deleted.sh" >> /etc/cron.d/authentication
+}
+
 install_slowdns (){
 echo "Installing dns..."
 {
@@ -448,4 +377,5 @@ install_security
 install_stunnel_dropbear
 install_squid
 install_slowdns
+ConfigAuthentication()
 rebootserver
